@@ -53,12 +53,12 @@ public class WaterSortGame {
     }
 
     public void deSelect() {
-        Stack first = clinkedList.last.getNextStack();
+        Stack ft = clinkedList.last.getNextStack();
         if (select(getNumberBottle()) == true) {
             for (int i = 1; i < getNumberBottle(); i++) {
-                first = first.getNextStack();
+                ft = ft.getNextStack();
             }
-            first.selectedBottle = 0;
+            ft.selectedBottle = 0;
         }
         else {
             System.out.println("No bottles selected");
@@ -66,17 +66,22 @@ public class WaterSortGame {
     }
 
     public void selectNext() {
-        Stack first = clinkedList.last.getNextStack();
+        Stack ft = clinkedList.last.getNextStack();
         if (select(getNumberBottle()) == true) {
             for (int i = 1; i < getNumberBottle(); i++) {
-                first = first.getNextStack();
+                ft = ft.getNextStack();
             }
-            first.selectedBottle = 0;
-            first = first.getNextStack();
-            first.selectedBottle = 1;
+            ft.selectedBottle = 0;
+            ft = ft.getNextStack();
+            ft.selectedBottle = 1;
+            int selNex = 0;
             if (getNumberBottle() + 1 > clinkedList.countBottle) {
-                int selNex = (getNumberBottle() + 1) % clinkedList.countBottle;
-                select(selNex); // متد های select ایراد داره احتمالا
+                selNex = (getNumberBottle() + 1) % clinkedList.countBottle;
+                select(selNex);
+            }
+            else {
+                selNex = getNumberBottle() + 1;
+                select(selNex);
             }
         }
         else {
@@ -96,6 +101,15 @@ public class WaterSortGame {
                 first = first.getNextStack();
             }
             first.selectedBottle = 1;
+            int selprev = 0;
+            if (getNumberBottle() == 1) {
+                selprev = clinkedList.countBottle;
+                select(selprev);
+            }
+            else {
+                selprev = getNumberBottle() - 1;
+                select(selprev);
+            }
         }
         else {
             System.out.println("No bottles selected");
