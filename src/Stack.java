@@ -1,15 +1,16 @@
 public class Stack {
 
-    private Node top;
+    public Node top;
+    public int selectedBottle = 0;
     private Stack nextStack;
-    private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
-    private int maxBottleSize;
+//    private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
+//    private int maxBottleSize;
 //    private int bottleNum;
 
     public Stack() {
         top = null;
         setNextStack(null);
-        bottleSize = 0;
+//        bottleSize = 0;
     }
 
     public Stack(Node x) {
@@ -19,31 +20,31 @@ public class Stack {
             x.next(top);
             top = x;
         }
-        bottleSize++;
+//        bottleSize++;
         setNextStack(null);
     }
 
-    public boolean isSelected(Stack p) {
-        if (p.top == null) {
-            System.out.println("You can't select this bottle");
-            return false;
-        } else {
-            Node temp = p.top;
-            int k = 0;
-            while (temp.next() != null) {
-                bottleSize++;
-                if (temp.getColor() == temp.next().getColor()) {
-                    k++;
-                    temp = temp.next();
-                }
-                else {
-                    return true;
-                }
-            }
-            if (bottleSize == maxBottleSize && k == bottleSize) return false;
-            return true;
-        }
-    }
+//    public boolean isSelected(Stack p) {
+//        if (p.top == null) {
+//            System.out.println("You can't select this bottle");
+//            return false;
+//        } else {
+//            Node temp = p.top;
+//            int k = 0;
+//            while (temp.next() != null) {
+//                bottleSize++;
+//                if (temp.getColor() == temp.next().getColor()) {
+//                    k++;
+//                    temp = temp.next();
+//                }
+//                else {
+//                    return true;
+//                }
+//            }
+//            if (bottleSize == maxBottleSize && k == bottleSize) return false;
+//            return true;
+//        }
+//    }
 
     public void setNextStack(Stack nextStack) {
         this.nextStack = nextStack;
@@ -62,11 +63,11 @@ public class Stack {
         Node newColor = new Node(color);
         if (top == null) {
             top = newColor;
-            bottleSize++;
+//            bottleSize++;
         } else {
             newColor.next(top);
             top = newColor;
-            bottleSize++;
+//            bottleSize++;
         }
     }
 
@@ -78,7 +79,7 @@ public class Stack {
             String popStr;
             popStr = top.getColor();
             top = top.next();
-            bottleSize--;
+//            bottleSize--;
             return popStr;
         }
     }

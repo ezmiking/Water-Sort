@@ -1,6 +1,6 @@
 public class ClinkedList {
-    Stack last;
-    private int countBottle;// تعداد بطری ها
+    public Stack last;
+    public int countBottle;// تعداد بطری ها
 //    private int bottleNumber;
     private int count = 0;
 
