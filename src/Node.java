@@ -1,27 +1,28 @@
 public class Node {
 
-    private String data;
-    private Node nextData;
+    private String color;
+    private Node next;
+
 
     public Node() {
-        setData(null);
+        setColor(null);
         next(null);
     }
-    public Node(String data) {
-        setData(data);
+    public Node(String color) {
+        setColor(color);
         next(null);
     }
-    public void setData(String data) { //set data
-        this.data = data;
+    public void setColor(String color) { //set color
+        this.color = color;
     }
-    public String getData() { //get data
-        return data;
+    public String getColor() { //get color
+        return color;
     }
-    public void next(Node nextData) {
-        this.nextData = nextData;
+    public void next(Node next) {
+        this.next = next;
     }
     public Node next() {
-        return nextData;
+        return next;
     }
 
 }
