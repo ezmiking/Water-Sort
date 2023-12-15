@@ -5,7 +5,7 @@ public class WaterSortGame {
     private ClinkedList clinkedList;
     private Stack stack;
     private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
-    private int maxBottleSize;
+    private boolean isPoured = false;
 
     public WaterSortGame(String[] colors, int maxBottleSize) {
 
@@ -47,7 +47,8 @@ public class WaterSortGame {
                     return true;
                 }
             }
-            if (bottleSize == maxBottleSize && k == bottleSize) return false;
+            if (bottleSize == clinkedList.countBottle - 1 && k == bottleSize) return false;
+            // maxBottleSize = clinkedList.countBottle - 1
             return true;
         }
     }
@@ -113,6 +114,45 @@ public class WaterSortGame {
         }
         else {
             System.out.println("No bottles selected");
+        }
+    }
+
+    public Stack bottle_selected(int bottleNumber) { //استکی که انتخاب شده است را برمیگرداند
+        if (select(bottleNumber) == true) {
+            Stack temp = clinkedList.last.getNextStack();
+            for (int i = 1; i < bottleNumber; i++) {
+                temp = temp.getNextStack();
+            }
+            return temp;
+        }else {
+            System.out.println("No bottles selected");
+            return null;
+        }
+    }
+
+    public boolean pour(int bottleNumber) {
+        int k = 0;
+        Stack stack_selected, stack_2;
+        stack_2 = bottle_selected(bottleNumber);
+        if (select(getNumberBottle()) == true) {
+            stack_selected = bottle_selected(getNumberBottle());
+            while (stack_selected.top.getColor() == stack_2.top.getColor()) {
+                stack_2.push(stack_selected.top.getColor());
+                if (stack_2.isPour == 1) {
+                    k++;
+                    stack_selected.pop();
+                }
+            }
+            if (k > 0) {
+                isPoured = true;
+                return isPoured;
+            } else {
+                isPoured = false;
+                return isPoured;
+            }
+        }else {
+            isPoured = false;
+            return isPoured;
         }
     }
 

@@ -1,7 +1,9 @@
 public class Stack {
 
     public Node top;
-    public int selectedBottle = 0;
+    public static int selectedBottle = 0;
+    public static int maxBottleSize;
+    public static int isPour = 0;
     private Stack nextStack;
 //    private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
 //    private int maxBottleSize;
@@ -24,7 +26,65 @@ public class Stack {
         setNextStack(null);
     }
 
-//    public boolean isSelected(Stack p) {
+    public void setNextStack(Stack nextStack) {
+        this.nextStack = nextStack;
+    }
+
+    public Stack getNextStack() {
+        return nextStack;
+    }
+
+    public boolean isEmpty() {
+        if (top == null) return true;
+        return false;
+    }
+
+    public void push(String color) {
+        Node newColor = new Node(color);
+        Node temp = top;
+        int j = 1;
+        while (temp.next() != null) {
+            j++;
+            temp = temp.next();
+        }
+        if (top == null) {
+            top = newColor;
+            isPour = 1;
+//            bottleSize++;
+        }
+        else if (j == maxBottleSize) {
+            System.out.println("The bottle is full");
+            isPour = 0;
+            return;
+        }
+        else {
+            if (newColor.getColor() == top.getColor()) {
+                newColor.next(top);
+                top = newColor;
+                isPour = 1;
+            } else {
+                System.out.println("You cannot add this color to the bottle");
+                isPour = 0;
+                return;
+            }
+//            bottleSize++;
+        }
+    }
+
+    public String pop() {
+        if (isEmpty() == true) {
+            System.out.println("Bottle is Empty");
+            return null;
+        } else {
+            String popStr;
+            popStr = top.getColor();
+            top = top.next();
+//            bottleSize--;
+            return popStr;
+        }
+    }
+
+    //    public boolean isSelected(Stack p) {
 //        if (p.top == null) {
 //            System.out.println("You can't select this bottle");
 //            return false;
@@ -45,42 +105,4 @@ public class Stack {
 //            return true;
 //        }
 //    }
-
-    public void setNextStack(Stack nextStack) {
-        this.nextStack = nextStack;
-    }
-
-    public Stack getNextStack() {
-        return nextStack;
-    }
-
-    public boolean isEmpty() {
-        if (top == null) return true;
-        return false;
-    }
-
-    public void push(String color) {
-        Node newColor = new Node(color);
-        if (top == null) {
-            top = newColor;
-//            bottleSize++;
-        } else {
-            newColor.next(top);
-            top = newColor;
-//            bottleSize++;
-        }
-    }
-
-    public String pop() {
-        if (isEmpty() == true) {
-            System.out.println("Bottle is Empty");
-            return null;
-        } else {
-            String popStr;
-            popStr = top.getColor();
-            top = top.next();
-//            bottleSize--;
-            return popStr;
-        }
-    }
 }
