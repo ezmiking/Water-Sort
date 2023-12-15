@@ -11,6 +11,37 @@ public class WaterSortGame {
 
     }
 
+    public void swap(int bottleNumber) {
+        Stack stack_select, stack_2;
+        Stack temp_select, temp_2;
+        Stack prev_select = null, prev_2 = null;
+        stack_2 = bottle_selected(bottleNumber);
+        temp_2 = stack_2;
+        while (temp_2.getNextStack() != stack_2) {
+            prev_2 = temp_2;
+            temp_2 = temp_2.getNextStack();
+        }
+        temp_2 = stack_2;
+        if (select(getNumberBottle()) == true) {
+            stack_select = bottle_selected(getNumberBottle());
+            temp_select = stack_select;
+            while (temp_select.getNextStack() != stack_select) {
+                prev_select = temp_select;
+                temp_select = temp_select.getNextStack();
+            }
+            temp_select = stack_select;
+
+            prev_select.setNextStack(temp_2);
+            temp_2.setNextStack(stack_select.getNextStack());
+            stack_select.setNextStack(null);
+
+            prev_2.setNextStack(temp_select);
+            temp_select.setNextStack(stack_2.getNextStack());
+            stack_2.setNextStack(null);
+
+        }
+    }
+
     public boolean select(int bottleNumber) {
 //        bottleNumber = getNumberBottle();
         Stack first = clinkedList.last.getNextStack();
