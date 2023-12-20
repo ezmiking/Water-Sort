@@ -2,7 +2,7 @@ public class Stack {
 
     public Node top;
     public static int selectedBottle = 0;
-    public static int maxBottleSize;
+    public int maxBottleSize;
     public static int isPour = 0;
     private Stack nextStack;
 //    private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
@@ -15,6 +15,19 @@ public class Stack {
 //        bottleSize = 0;
     }
 
+    public boolean sameColor() {
+        Node temp = top;
+        int k = 1;
+        while (temp == temp.next()) {
+            temp = temp.next();
+            k++;
+            //1-2-3-4
+        }
+        if (k == maxBottleSize) {
+            return true;
+        }
+        else return false;
+    }
     public Stack(Node x) {
         if (top == null) {
             top = x;

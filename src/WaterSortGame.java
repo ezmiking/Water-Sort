@@ -6,7 +6,8 @@ public class WaterSortGame {
     private String[] colors;
     private String[] randomColors;
     private Stack stack;
-    private int countColors;
+    private static boolean addEmpty = false;
+//    private int countColors; // = maxBottleSize
     private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
     private boolean isPoured = false;
 
@@ -14,6 +15,37 @@ public class WaterSortGame {
 
     public WaterSortGame(String[] colors, int maxBottleSize) {
 
+    }
+
+    public boolean hasWon() {
+        int k = 0;//تعداد بطری هایی که کامل شده اند
+        Stack temp = stack;
+        while (temp.getNextStack() != null) {
+            if (temp.sameColor() == true) {
+                k++;
+            }
+            temp = temp.getNextStack();
+        }
+        if (k == stack.maxBottleSize) {
+            System.out.println("you are winner");
+            return true;
+        }
+        else return false;
+    }
+
+    public void addEmptyBottle() {
+        Stack temp = stack;
+        if (addEmpty == false) {
+            Stack minStack = new Stack();
+            minStack.maxBottleSize = stack.maxBottleSize / 2;
+            while (temp.getNextStack() != null) {
+                temp = temp.getNextStack();
+                //1->2->4->6
+            }
+            temp.setNextStack(minStack);
+            addEmpty = true;
+        }
+        else return;
     }
 
     public void replaceColor(String firstColor, String secondColor) {
@@ -222,10 +254,14 @@ public class WaterSortGame {
     public void getColors() {
         System.out.println("pleas enter your colors");
         String newColor = null;
-        for (int i = 0; i < countColors; i++) {
+        for (int i = 0; i < stack.maxBottleSize; i++) {
             newColor = scanner.next();
             colors[i] = newColor;
         }
+    }
+
+    public void getMaxBottleSize() {
+        stack.maxBottleSize = scanner.nextInt();
     }
 
     public void display() {
