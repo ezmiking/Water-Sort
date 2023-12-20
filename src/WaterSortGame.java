@@ -3,12 +3,36 @@ import java.util.Scanner;
 public class WaterSortGame {
 
     private ClinkedList clinkedList;
+    private String[] colors;
+    private String[] randomColors;
     private Stack stack;
+    private int countColors;
     private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
     private boolean isPoured = false;
 
+    Scanner scanner = new Scanner(System.in);
+
     public WaterSortGame(String[] colors, int maxBottleSize) {
 
+    }
+
+    public void replaceColor(String firstColor, String secondColor) {
+        int sw = 0, k = 0;
+        firstColor = scanner.next();
+        for (int i = 0; i < colors.length; i++) {
+            if (colors[i] == firstColor) {
+                sw = 1;
+                k = i;
+            }
+        }
+        if (sw == 1) {
+            secondColor = scanner.next();
+            colors[k] = secondColor;
+
+        } else {
+            System.out.println("your color in doesn't exist");
+            return;
+        }
     }
 
     public void swap(int bottleNumber) {
@@ -188,12 +212,20 @@ public class WaterSortGame {
     }
 
     public int getNumberBottle() {
-        Scanner scanner = new Scanner(System.in);
         int bottleNumber = scanner.nextInt();
         while (bottleNumber <= 0){
             bottleNumber = scanner.nextInt();
         }
         return bottleNumber;
+    }
+
+    public void getColors() {
+        System.out.println("pleas enter your colors");
+        String newColor = null;
+        for (int i = 0; i < countColors; i++) {
+            newColor = scanner.next();
+            colors[i] = newColor;
+        }
     }
 
     public void display() {
