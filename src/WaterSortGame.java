@@ -3,10 +3,16 @@ import java.util.Scanner;
 public class WaterSortGame {
 
     private ClinkedList clinkedList;
+    private Stack undoStack;
+    private int bottleNumber_selected;
+    private int bottleNumber_2;
+    private int countColor;//= maxBottle
+//    private Stack stack;//باید اینو حذف کنم
     private String[] colors;
     private String[] randomColors;
-    private Stack stack;
+    private String[][] arrDisplay;
     private static boolean addEmpty = false;
+    private static boolean undo = false;
 //    private int countColors; // = maxBottleSize
     private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
     private boolean isPoured = false;
@@ -17,16 +23,72 @@ public class WaterSortGame {
 
     }
 
+    public void display() {
+        Stack temp = clinkedList.last.getNextStack();
+//        arrDisplay[clinkedList.last.maxBottleSize][];
+        while (temp.getNextStack() != clinkedList.last.getNextStack()) {
+            while (temp.top.next() != null) {
+                System.out.println(temp.top.getColor());
+                temp.top = temp.top.next();
+            }
+
+        }
+    }
+
+    public void undo() {
+        //1->2->3->4
+        int k = 0; // تعداد رنگ هایی که در بطری اندو وجود دارد برای حذف از بطری دیگر
+        Stack stack_selected, stack_2;
+        stack_selected = bottle_selected(bottleNumber_selected);
+        stack_2 = bottle_selected(bottleNumber_2);
+        if (undoStack.isEmpty() == false) {
+            undo = true;
+            while (undoStack.top != null) {
+                stack_selected.pushForUndo(undoStack.top.getColor());
+                undoStack.pop();
+                k++;
+            }
+            for (int i = 0; i < k; i++) {
+                stack_2.pop();
+            }
+        }
+        else {
+            undo = false;
+            System.out.println("you can't undo");
+        }
+    }
+
+    public void redo() {
+        if (undo == true) {
+            pourForRedo(bottleNumber_selected, bottleNumber_2);
+        }else {
+            System.out.println("you can't use redo");
+        }
+    }
+
+    public void pourForRedo(int BtNum_selected, int BtNum_2) {
+        Stack stack_selected, stack_2;
+        stack_2 = bottle_selected(BtNum_2);
+        stack_selected = bottle_selected(BtNum_selected);
+        while (stack_selected.top.getColor() == stack_2.top.getColor()) {
+            stack_2.push(stack_selected.top.getColor());
+            if (stack_2.isPour == 1) {
+                stack_selected.pop();
+            }
+        }
+
+    }
+
     public boolean hasWon() {
         int k = 0;//تعداد بطری هایی که کامل شده اند
-        Stack temp = stack;
-        while (temp.getNextStack() != null) {
+        Stack temp = clinkedList.last;
+        while (temp.getNextStack() != clinkedList.last) {
             if (temp.sameColor() == true) {
                 k++;
             }
             temp = temp.getNextStack();
         }
-        if (k == stack.maxBottleSize) {
+        if (k == clinkedList.last.maxBottleSize) {
             System.out.println("you are winner");
             return true;
         }
@@ -34,15 +96,12 @@ public class WaterSortGame {
     }
 
     public void addEmptyBottle() {
-        Stack temp = stack;
         if (addEmpty == false) {
             Stack minStack = new Stack();
-            minStack.maxBottleSize = stack.maxBottleSize / 2;
-            while (temp.getNextStack() != null) {
-                temp = temp.getNextStack();
-                //1->2->4->6
-            }
-            temp.setNextStack(minStack);
+            minStack.maxBottleSize = clinkedList.last.maxBottleSize / 2;
+            minStack.setNextStack(clinkedList.last.getNextStack());
+            clinkedList.last.setNextStack(minStack);
+            clinkedList.last = minStack;
             addEmpty = true;
         }
         else return;
@@ -113,6 +172,7 @@ public class WaterSortGame {
         if (first.selectedBottle == 1 && isSelected(first) == true) {
             return true;
         } else {
+            first.selectedBottle = 0;
             return false;
         }
     }
@@ -218,15 +278,20 @@ public class WaterSortGame {
     }
 
     public boolean pour(int bottleNumber) {
-        int k = 0;
+        int k = 0; // تعداد رنگایی که اضافه میشه به بطری دیگر
+        int selectNum = getNumberBottle();
         Stack stack_selected, stack_2;
         stack_2 = bottle_selected(bottleNumber);
-        if (select(getNumberBottle()) == true) {
-            stack_selected = bottle_selected(getNumberBottle());
+        bottleNumber_2 = bottleNumber;
+        bottleNumber_selected = selectNum;
+        if (select(selectNum) == true) {
+            stack_selected = bottle_selected(selectNum);
             while (stack_selected.top.getColor() == stack_2.top.getColor()) {
                 stack_2.push(stack_selected.top.getColor());
                 if (stack_2.isPour == 1) {
                     k++;
+                    undoStack.clearStack();
+                    undoStack.push(stack_selected.top.getColor());
                     stack_selected.pop();
                 }
             }
@@ -254,17 +319,15 @@ public class WaterSortGame {
     public void getColors() {
         System.out.println("pleas enter your colors");
         String newColor = null;
-        for (int i = 0; i < stack.maxBottleSize; i++) {
+        for (int i = 0; i < clinkedList.last.maxBottleSize; i++) {
             newColor = scanner.next();
             colors[i] = newColor;
         }
     }
 
     public void getMaxBottleSize() {
-        stack.maxBottleSize = scanner.nextInt();
+        clinkedList.last.maxBottleSize = scanner.nextInt();
+        countColor = clinkedList.last.maxBottleSize;
     }
 
-    public void display() {
-
-    }
 }

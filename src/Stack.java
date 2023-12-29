@@ -3,7 +3,7 @@ public class Stack {
     public Node top;
     public static int selectedBottle = 0;
     public int maxBottleSize;
-    public static int isPour = 0;
+    public static int isPour = 0; //مال اینکه بدونیم بطری میتونه داخلش چیزی ریخته بشه یا نه
     private Stack nextStack;
 //    private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
 //    private int maxBottleSize;
@@ -52,6 +52,15 @@ public class Stack {
         return false;
     }
 
+    public void pushForUndo(String color) {
+        Node undoColor = new Node(color);
+        if (top == null) {
+            top = undoColor;
+        } else {
+            undoColor.next(top);
+            top = undoColor;
+        }
+    }
     public void push(String color) {
         Node newColor = new Node(color);
         Node temp = top;
@@ -94,6 +103,16 @@ public class Stack {
             top = top.next();
 //            bottleSize--;
             return popStr;
+        }
+    }
+
+    public void clearStack() {
+        Node temp = top;
+        while (temp.next() != null) {
+            pop();
+//            temp = null;
+//            temp = top.next();
+//            top = temp;
         }
     }
 
