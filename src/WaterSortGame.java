@@ -1,333 +1,261 @@
+import java.util.Random;
 import java.util.Scanner;
 
 public class WaterSortGame {
-
-    private ClinkedList clinkedList;
-    private Stack undoStack;
-    private int bottleNumber_selected;
-    private int bottleNumber_2;
-    private int countColor;//= maxBottle
-//    private Stack stack;//باید اینو حذف کنم
-    private String[] colors;
-    private String[] randomColors;
-    private String[][] arrDisplay;
-    private static boolean addEmpty = false;
-    private static boolean undo = false;
-//    private int countColors; // = maxBottleSize
-    private int bottleSize = 0; //مقداری که در هر بطری قرار دارد و نمیدانیم چقد است
+    private ClinkedList clinkedList = new ClinkedList();
+//    private Stack stackFirst = new Stack();
+    public static int maxBottleSize;
+    public static int countBottle;
+    public static int bottleNumSelected;
+    private static int isPour = 0;
+    public static String[] color;
+    public boolean isSelected = false;
     private boolean isPoured = false;
 
-    Scanner scanner = new Scanner(System.in);
 
-    public WaterSortGame(String[] colors, int maxBottleSize) {
+    Scanner input = new Scanner(System.in);
+    Random random = new Random();
 
+    public WaterSortGame(String[] color, int maxBottleSizeInput) {
+        countBottle = 4;
+        maxBottleSize = 3;
+        int  p = 0; // آرایه ran اندیس
+//        maxBottleSize = input.nextInt();
+        maxBottleSizeInput = maxBottleSize;
+        String[] rand = new String[color.length * maxBottleSizeInput];
+        int randSize = rand.length;
+        int t;
+
+
+
+//        String newColors = input.next();
+//        color = newColors.split(" ");
+//        countBottle = color.length + 1;
+
+        for (int i = 0; i < color.length; i++) {
+            for (int j = 0; j < maxBottleSizeInput; j++) {
+                rand[p] = color[i];
+                p++;
+            }
+        }
+        for (int i = 0; i < countBottle - 1; i++) {
+            Stack stackFirst = new Stack();
+            for (int j = 0; j < maxBottleSizeInput; j++) {
+                t = random.nextInt(randSize);
+                stackFirst.push(rand[t]);
+                rand[t] = rand[randSize - 1];
+                randSize--;
+            }
+            clinkedList.push(stackFirst);
+        }
+        Stack stackEmpty = new Stack();
+//        for (int i = 0; i < maxBottleSize; i++) {
+//            stackEmpty.push("Empty");
+//        }
+        clinkedList.push(stackEmpty);
     }
 
     public void display() {
-        Stack temp = clinkedList.last.getNextStack();
-//        arrDisplay[clinkedList.last.maxBottleSize][];
-        while (temp.getNextStack() != clinkedList.last.getNextStack()) {
-            while (temp.top.next() != null) {
-                System.out.println(temp.top.getColor());
-                temp.top = temp.top.next();
+
+        for (int i = 1; i <= 3; i++) {
+            Stack first = clinkedList.last.getNextStack();
+            for (int j = 1; j <= 4; j++) {
+                System.out.print(first.display(i) + "   ");
+                first = first.getNextStack();
             }
-
-        }
-    }
-
-    public void undo() {
-        //1->2->3->4
-        int k = 0; // تعداد رنگ هایی که در بطری اندو وجود دارد برای حذف از بطری دیگر
-        Stack stack_selected, stack_2;
-        stack_selected = bottle_selected(bottleNumber_selected);
-        stack_2 = bottle_selected(bottleNumber_2);
-        if (undoStack.isEmpty() == false) {
-            undo = true;
-            while (undoStack.top != null) {
-                stack_selected.pushForUndo(undoStack.top.getColor());
-                undoStack.pop();
-                k++;
-            }
-            for (int i = 0; i < k; i++) {
-                stack_2.pop();
-            }
-        }
-        else {
-            undo = false;
-            System.out.println("you can't undo");
-        }
-    }
-
-    public void redo() {
-        if (undo == true) {
-            pourForRedo(bottleNumber_selected, bottleNumber_2);
-        }else {
-            System.out.println("you can't use redo");
-        }
-    }
-
-    public void pourForRedo(int BtNum_selected, int BtNum_2) {
-        Stack stack_selected, stack_2;
-        stack_2 = bottle_selected(BtNum_2);
-        stack_selected = bottle_selected(BtNum_selected);
-        while (stack_selected.top.getColor() == stack_2.top.getColor()) {
-            stack_2.push(stack_selected.top.getColor());
-            if (stack_2.isPour == 1) {
-                stack_selected.pop();
-            }
-        }
-
-    }
-
-    public boolean hasWon() {
-        int k = 0;//تعداد بطری هایی که کامل شده اند
-        Stack temp = clinkedList.last;
-        while (temp.getNextStack() != clinkedList.last) {
-            if (temp.sameColor() == true) {
-                k++;
-            }
-            temp = temp.getNextStack();
-        }
-        if (k == clinkedList.last.maxBottleSize) {
-            System.out.println("you are winner");
-            return true;
-        }
-        else return false;
-    }
-
-    public void addEmptyBottle() {
-        if (addEmpty == false) {
-            Stack minStack = new Stack();
-            minStack.maxBottleSize = clinkedList.last.maxBottleSize / 2;
-            minStack.setNextStack(clinkedList.last.getNextStack());
-            clinkedList.last.setNextStack(minStack);
-            clinkedList.last = minStack;
-            addEmpty = true;
-        }
-        else return;
-    }
-
-    public void replaceColor(String firstColor, String secondColor) {
-        int sw = 0, k = 0;
-        firstColor = scanner.next();
-        for (int i = 0; i < colors.length; i++) {
-            if (colors[i] == firstColor) {
-                sw = 1;
-                k = i;
-            }
-        }
-        if (sw == 1) {
-            secondColor = scanner.next();
-            colors[k] = secondColor;
-
-        } else {
-            System.out.println("your color in doesn't exist");
-            return;
-        }
-    }
-
-    public void swap(int bottleNumber) {
-        Stack stack_select, stack_2;
-        Stack temp_select, temp_2;
-        Stack prev_select = null, prev_2 = null;
-        stack_2 = bottle_selected(bottleNumber);
-        temp_2 = stack_2;
-        while (temp_2.getNextStack() != stack_2) {
-            prev_2 = temp_2;
-            temp_2 = temp_2.getNextStack();
-        }
-        temp_2 = stack_2;
-        if (select(getNumberBottle()) == true) {
-            stack_select = bottle_selected(getNumberBottle());
-            temp_select = stack_select;
-            while (temp_select.getNextStack() != stack_select) {
-                prev_select = temp_select;
-                temp_select = temp_select.getNextStack();
-            }
-            temp_select = stack_select;
-
-            prev_select.setNextStack(temp_2);
-            temp_2.setNextStack(stack_select.getNextStack());
-            stack_select.setNextStack(null);
-
-            prev_2.setNextStack(temp_select);
-            temp_select.setNextStack(stack_2.getNextStack());
-            stack_2.setNextStack(null);
-
+            System.out.println();
         }
     }
 
     public boolean select(int bottleNumber) {
-//        bottleNumber = getNumberBottle();
-        Stack first = clinkedList.last.getNextStack();
-        if (bottleNumber > clinkedList.countBottle) {
+        bottleNumSelected = input.nextInt();
+        bottleNumber = bottleNumSelected;
+        Stack S = findBottle(bottleNumber);
+        if (bottleNumber > countBottle) {
             System.out.println("Bottle is not found");
-            return false;
-        } else {
-            for (int i = 1; i < bottleNumber; i++) {
-                first = first.getNextStack();
-            }
-            first.selectedBottle = 1;
+            isSelected = false;
+            return isSelected;
+        }else {
+            S.bottleSelected = true;
         }
-        if (first.selectedBottle == 1 && isSelected(first) == true) {
-            return true;
+        if ( S.bottleSelected == true && isSelected(S) == true) {
+            isSelected = true;
+            System.out.println(S.top.getColor());
+            return isSelected;
         } else {
-            first.selectedBottle = 0;
-            return false;
+            S.bottleSelected = false;
+            isSelected = false;
+            return isSelected;
         }
     }
 
-    public boolean isSelected(Stack p) {
-        if (p.top == null) {
+    public boolean isSelected(Stack temp) {
+        int bottleCount = 0;
+        int samColor = 1;
+        if (temp.top == null) {
             System.out.println("You can't select this bottle");
             return false;
-        } else {
-            Node temp = p.top;
-            int k = 0;
-            while (temp.next() != null) {
-                bottleSize++;
-                if (temp.getColor() == temp.next().getColor()) {
-                    k++;
-                    temp = temp.next();
-                }
-                else {
+        }else {
+            Node t = temp.top;
+            while (t.next() != null) {
+                bottleCount++;
+                if (t == t.next()) {
+                    samColor++;
+                    t = t.next();
+                }else {
                     return true;
                 }
             }
-            if (bottleSize == clinkedList.countBottle - 1 && k == bottleSize) return false;
-            // maxBottleSize = clinkedList.countBottle - 1
+            if (bottleCount == maxBottleSize && samColor == bottleCount) {
+                return false;
+            }
             return true;
         }
     }
 
-    public void deSelect() {
-        Stack ft = clinkedList.last.getNextStack();
-        if (select(getNumberBottle()) == true) {
-            for (int i = 1; i < getNumberBottle(); i++) {
-                ft = ft.getNextStack();
-            }
-            ft.selectedBottle = 0;
-        }
-        else {
-            System.out.println("No bottles selected");
-        }
-    }
-
-    public void selectNext() {
-        Stack ft = clinkedList.last.getNextStack();
-        if (select(getNumberBottle()) == true) {
-            for (int i = 1; i < getNumberBottle(); i++) {
-                ft = ft.getNextStack();
-            }
-            ft.selectedBottle = 0;
-            ft = ft.getNextStack();
-            ft.selectedBottle = 1;
-            int selNex = 0;
-            if (getNumberBottle() + 1 > clinkedList.countBottle) {
-                selNex = (getNumberBottle() + 1) % clinkedList.countBottle;
-                select(selNex);
-            }
-            else {
-                selNex = getNumberBottle() + 1;
-                select(selNex);
-            }
-        }
-        else {
-            System.out.println("No bottles selected");
-        }
-    }
-
-    public void selectPrevious() {
+    public Stack findBottle(int bottleNumber) {
         Stack first = clinkedList.last.getNextStack();
-        if (select(getNumberBottle()) == true) {
-            for (int i = 1; i < getNumberBottle(); i++) {
-                first = first.getNextStack();
+        for (int i = 1; i < bottleNumber; i++) {
+            first = first.getNextStack();
+        }
+        return first;
+    }
+
+    public Stack findBottlePrevious(int bottleNumber) {
+        Stack previous = clinkedList.last.getNextStack();
+        for (int i = 2; i < bottleNumber; i++) {
+            previous = previous.getNextStack();
+        }
+        return previous;
+    }
+
+    public void deSelect() {
+        Stack select = findBottle(bottleNumSelected);
+        select.bottleSelected = false;
+        bottleNumSelected = 0;
+    }
+
+    public void nextSelect() {
+        Stack nextSelect = findBottle(bottleNumSelected);
+        nextSelect.bottleSelected = false;
+        nextSelect = nextSelect.getNextStack();
+        bottleNumSelected++;
+        nextSelect.bottleSelected = true;
+    }
+
+    public void previousSelect() {
+        Stack select = findBottle(bottleNumSelected);
+        Stack selectPrevious = findBottle(bottleNumSelected);
+        while (selectPrevious.nextStack != findBottle(bottleNumSelected)) {
+            selectPrevious = selectPrevious.getNextStack();
+        }
+        select.bottleSelected = false;
+        selectPrevious.bottleSelected = true;
+        bottleNumSelected--;
+    }
+
+    public void  pushForPour(String color, Stack stackGetColor) {
+        Node newColor = new Node(color);
+        Node temp = stackGetColor.top;
+        int j = 1;
+        if (temp != null) {
+            while (temp.next() != null) {
+                j++;
+                temp = temp.next();
             }
-            first.selectedBottle = 0;
-            Stack temp = first;
-            while (first.getNextStack() != temp) {
-                first = first.getNextStack();
-            }
-            first.selectedBottle = 1;
-            int selprev = 0;
-            if (getNumberBottle() == 1) {
-                selprev = clinkedList.countBottle;
-                select(selprev);
-            }
-            else {
-                selprev = getNumberBottle() - 1;
-                select(selprev);
-            }
+        } else {
+            j = 0;
+        }
+        if (stackGetColor.top == null) {
+            System.out.print("kh");
+            stackGetColor.top = newColor;
+            isPour = 1;
+//            bottleSize++;
+        }
+        else if (j == maxBottleSize) {
+            System.out.println("The bottle is full");
+            isPour = 0;
+            return;
         }
         else {
-            System.out.println("No bottles selected");
-        }
-    }
-
-    public Stack bottle_selected(int bottleNumber) { //استکی که انتخاب شده است را برمیگرداند
-        if (select(bottleNumber) == true) {
-            Stack temp = clinkedList.last.getNextStack();
-            for (int i = 1; i < bottleNumber; i++) {
-                temp = temp.getNextStack();
-            }
-            return temp;
-        }else {
-            System.out.println("No bottles selected");
-            return null;
-        }
-    }
-
-    public boolean pour(int bottleNumber) {
-        int k = 0; // تعداد رنگایی که اضافه میشه به بطری دیگر
-        int selectNum = getNumberBottle();
-        Stack stack_selected, stack_2;
-        stack_2 = bottle_selected(bottleNumber);
-        bottleNumber_2 = bottleNumber;
-        bottleNumber_selected = selectNum;
-        if (select(selectNum) == true) {
-            stack_selected = bottle_selected(selectNum);
-            while (stack_selected.top.getColor() == stack_2.top.getColor()) {
-                stack_2.push(stack_selected.top.getColor());
-                if (stack_2.isPour == 1) {
-                    k++;
-                    undoStack.clearStack();
-                    undoStack.push(stack_selected.top.getColor());
-                    stack_selected.pop();
-                }
-            }
-            if (k > 0) {
-                isPoured = true;
-                return isPoured;
+            if (newColor.getColor() == stackGetColor.top.getColor()) {
+                newColor.next(stackGetColor.top);
+                stackGetColor.top = newColor;
+                isPour = 1;
             } else {
-                isPoured = false;
-                return isPoured;
+                System.out.println("You cannot add this color to the bottle");
+                isPour = 0;
+                return;
             }
+//            bottleSize++;
+        }
+    }
+
+    public boolean pour(int bottleNumber) { //*****undo redo
+        int k = 0; // تعداد رنگایی که اضافه میشه به بطری دیگر
+        Stack isStack = findBottle(bottleNumber);
+        Stack select = findBottle(bottleNumSelected);
+        pushForPour(select.top.getColor(), isStack);
+        select.pop();
+        while (select.top.getColor() == isStack.top.getColor()) {
+            pushForPour(select.top.getColor(), isStack);
+            if (isPour == 1) {
+                k++;
+                select.pop();
+            }
+        }
+        if (k > 0) {
+            isPoured = true;
+            return isPoured;
         }else {
             isPoured = false;
             return isPoured;
         }
     }
 
-    public int getNumberBottle() {
-        int bottleNumber = scanner.nextInt();
-        while (bottleNumber <= 0){
-            bottleNumber = scanner.nextInt();
+    public void swap(int bottleNumber) {
+        Stack select = findBottle(bottleNumSelected);
+        Stack swapStack = findBottle(bottleNumber);
+        Stack previousSelect, previousSwapStack;
+        Stack temp = null;
+        previousSelect = findBottlePrevious(bottleNumSelected);
+        previousSwapStack = findBottlePrevious(bottleNumber);
+        if (select == clinkedList.last) {
+            temp = select;
+            temp.setNextStack(swapStack.getNextStack());
+            swapStack.setNextStack(select.getNextStack());
+            previousSwapStack.setNextStack(temp);
+            previousSelect.setNextStack(swapStack);
+            clinkedList.last = swapStack;
         }
-        return bottleNumber;
-    }
-
-    public void getColors() {
-        System.out.println("pleas enter your colors");
-        String newColor = null;
-        for (int i = 0; i < clinkedList.last.maxBottleSize; i++) {
-            newColor = scanner.next();
-            colors[i] = newColor;
+        else if (swapStack == clinkedList.last) {
+            temp = swapStack;
+            temp.setNextStack(select.getNextStack());
+            select.setNextStack(swapStack.getNextStack());
+            previousSelect.setNextStack(temp);
+            previousSwapStack.setNextStack(select);
+            clinkedList.last = select;
+        }
+        else if (select.getNextStack() == swapStack) {
+            select.setNextStack(swapStack.getNextStack());
+            swapStack.setNextStack(select);
+            previousSelect.setNextStack(swapStack);
+        }
+        else if (swapStack.getNextStack() == select) {
+            swapStack.setNextStack(select.getNextStack());
+            select.setNextStack(swapStack);
+            previousSwapStack.setNextStack(select);
+        }
+        else {
+            temp = swapStack;
+            temp.setNextStack(select.getNextStack());
+            select.setNextStack(swapStack.getNextStack());
+            previousSelect.setNextStack(temp);
+            previousSwapStack.setNextStack(select);
         }
     }
 
-    public void getMaxBottleSize() {
-        clinkedList.last.maxBottleSize = scanner.nextInt();
-        countColor = clinkedList.last.maxBottleSize;
-    }
+    public void replaceColor(String firstColor, String secondColor) {
 
+    }
 }

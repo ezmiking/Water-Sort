@@ -1,37 +1,21 @@
 public class ClinkedList {
-    public Stack last;
-    public int countBottle;// تعداد بطری ها
-//    private int bottleNumber;
-    private int count = 0;
+    Stack last;
 
     public ClinkedList() {
-        last = null;
-        countBottle++;
+
     }
     public ClinkedList(Stack last) {
         last.setNextStack(last);
-        countBottle++;
-    }
-    public int traverseForCount() {
-        Stack p;
-        if (last == null) {
-            System.out.println("list is empty!!");
-            return 0;
-        }
-        else {
-            p = last.getNextStack();
-            do {
-                count++;
-                p.setNextStack(p);
-            }while (p != last.getNextStack());
-            return count;
-        }
-    }
-    public int length() {
-        return countBottle;
-    }
-    public boolean isEmpty() {
-        return countBottle == 0;
     }
 
+    public void push(Stack p) {
+        if (last == null) {
+            last = p;
+            p.setNextStack(p);
+        } else {
+            p.setNextStack(last.getNextStack());
+            last.setNextStack(p);
+            last = p;
+        }
+    }
 }
