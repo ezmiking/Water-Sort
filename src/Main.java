@@ -7,10 +7,9 @@ public class Main {
         int maxB = 3;
         WaterSortGame waterSortGame = new WaterSortGame(color, 3);
         waterSortGame.display();
-        waterSortGame.select(1);
-        waterSortGame.swap(3);
+//        waterSortGame.replaceColor("kir", "khkhkhkh");
+//
+        waterSortGame.addEmptyBottle();
         waterSortGame.display();
-//        waterSortGame.pour(4);
-//        waterSortGame.display();
     }
 }

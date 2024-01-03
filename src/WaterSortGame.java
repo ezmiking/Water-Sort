@@ -9,6 +9,7 @@ public class WaterSortGame {
     public static int bottleNumSelected;
     private static int isPour = 0;
     public static String[] color;
+    private static boolean addEmpty = false;
     public boolean isSelected = false;
     private boolean isPoured = false;
 
@@ -80,7 +81,6 @@ public class WaterSortGame {
         }
         if ( S.bottleSelected == true && isSelected(S) == true) {
             isSelected = true;
-            System.out.println(S.top.getColor());
             return isSelected;
         } else {
             S.bottleSelected = false;
@@ -167,7 +167,6 @@ public class WaterSortGame {
             j = 0;
         }
         if (stackGetColor.top == null) {
-            System.out.print("kh");
             stackGetColor.top = newColor;
             isPour = 1;
 //            bottleSize++;
@@ -256,6 +255,34 @@ public class WaterSortGame {
     }
 
     public void replaceColor(String firstColor, String secondColor) {
+        int k = 0, sw = 0;
+//        for (int i = 0; i < 3; i++) { // 3 -> color.length
+//            if (firstColor == color[i]) {
+//                sw = 1;
+//                k = i;
+//            }
+//        }
+//        color[k] = secondColor;
+        for (int i = 0; i < countBottle; i++) {
+            Stack stackReplace = clinkedList.last.getNextStack();
+            Node temp = stackReplace.top;
+            while (temp != null) {
+                if (temp.getColor().equals(firstColor)) {
+                    temp.setColor(secondColor);
+                }
+                temp = temp.next();
+            }
+            stackReplace = stackReplace.getNextStack();
+        }
+    } // کار داره هنوز
 
+    public void addEmptyBottle() {
+        if (addEmpty == false) {
+            Stack minStack = new Stack();
+            clinkedList.push(minStack);
+            countBottle++;
+            addEmpty = true;
+        }
+        else return;
     }
 }
