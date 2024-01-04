@@ -1,6 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
+
 public class WaterSortGame {
     private ClinkedList clinkedList = new ClinkedList();
 //    private Stack stackFirst = new Stack();
@@ -8,7 +9,8 @@ public class WaterSortGame {
     public static int countBottle;
     public static int bottleNumSelected;
     private static int isPour = 0;
-    public static String[] color;
+    public static int sizeArray;
+    public static String[] color = new String[100];
     private static boolean addEmpty = false;
     public boolean isSelected = false;
     private boolean isPoured = false;
@@ -22,11 +24,15 @@ public class WaterSortGame {
         maxBottleSize = 3;
         int  p = 0; // آرایه ran اندیس
 //        maxBottleSize = input.nextInt();
-        maxBottleSizeInput = maxBottleSize;
+        maxBottleSize = maxBottleSizeInput;
         String[] rand = new String[color.length * maxBottleSizeInput];
         int randSize = rand.length;
         int t;
-
+        sizeArray = color.length;;
+        countBottle = color.length + 1;
+//        for (int i = 0; i < color.length; i++) {
+//            this.color[i] = color[i];
+//        }
 
 
 //        String newColors = input.next();
@@ -58,9 +64,9 @@ public class WaterSortGame {
 
     public void display() {
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= maxBottleSize; i++) {
             Stack first = clinkedList.last.getNextStack();
-            for (int j = 1; j <= 4; j++) {
+            for (int j = 1; j <= countBottle; j++) {
                 System.out.print(first.display(i) + "   ");
                 first = first.getNextStack();
             }
@@ -69,8 +75,6 @@ public class WaterSortGame {
     }
 
     public boolean select(int bottleNumber) {
-        bottleNumSelected = input.nextInt();
-        bottleNumber = bottleNumSelected;
         Stack S = findBottle(bottleNumber);
         if (bottleNumber > countBottle) {
             System.out.println("Bottle is not found");
@@ -81,6 +85,7 @@ public class WaterSortGame {
         }
         if ( S.bottleSelected == true && isSelected(S) == true) {
             isSelected = true;
+            bottleNumSelected = bottleNumber;
             return isSelected;
         } else {
             S.bottleSelected = false;
@@ -135,12 +140,31 @@ public class WaterSortGame {
         bottleNumSelected = 0;
     }
 
-    public void nextSelect() {
+    public void nextSelect_2() {
         Stack nextSelect = findBottle(bottleNumSelected);
-        nextSelect.bottleSelected = false;
-        nextSelect = nextSelect.getNextStack();
-        bottleNumSelected++;
-        nextSelect.bottleSelected = true;
+        if (isSelected == true) {
+            nextSelect.bottleSelected = false;
+            select(bottleNumSelected + 1);
+        }else {
+            System.out.println("you can't select bottle");
+        }
+    }
+
+    public void nextSelect() {
+        if (isSelected == true) {
+            Stack nextSelect = findBottle(bottleNumSelected);
+            nextSelect.bottleSelected = false;
+//            nextSelect = nextSelect.getNextStack();
+            if (bottleNumSelected <= countBottle) {
+                bottleNumSelected++;
+            }else {
+                bottleNumSelected = (bottleNumSelected + 1) % countBottle;
+            }
+            select(bottleNumSelected);
+//            nextSelect.bottleSelected = true;
+        } else {
+            System.out.println("you can't select bottle");
+        }
     }
 
     public void previousSelect() {
@@ -190,26 +214,53 @@ public class WaterSortGame {
         }
     }
 
-    public boolean pour(int bottleNumber) { //*****undo redo
-        int k = 0; // تعداد رنگایی که اضافه میشه به بطری دیگر
+//    public boolean pour(int bottleNumber) { //*****undo redo
+//        int k = 0; // تعداد رنگایی که اضافه میشه به بطری دیگر
+//        Stack isStack = findBottle(bottleNumber);
+//        Stack select = findBottle(bottleNumSelected);
+//        pushForPour(select.top.getColor(), isStack);
+//        select.pop();
+//        while (select.top.getColor() == isStack.top.getColor()) {
+//            pushForPour(select.top.getColor(), isStack);
+//            if (isPour == 1) {
+//                k++;
+//                select.pop();
+//            }
+//        }
+//        if (k > 0) {
+//            isPoured = true;
+//            return isPoured;
+//        }else {
+//            isPoured = false;
+//            return isPoured;
+//        }
+//    }
+
+    public boolean pour_2(int bottleNumber) {
         Stack isStack = findBottle(bottleNumber);
         Stack select = findBottle(bottleNumSelected);
-        pushForPour(select.top.getColor(), isStack);
-        select.pop();
+        Node temp = isStack.top;
+        int j = 1;
+        while (temp != null) {
+            j++;
+        }
+        if (isStack.top == null) {
+            isStack.push(select.top.getColor());
+            select.pop();
+            isPoured = true;
+        }
         while (select.top.getColor() == isStack.top.getColor()) {
-            pushForPour(select.top.getColor(), isStack);
-            if (isPour == 1) {
-                k++;
+            if (j == maxBottleSize) {
+                System.out.println("bottle is full");
+                isPoured = false;
+            } else {
+                isStack.push(select.top.getColor());
                 select.pop();
+                isPoured = true;
             }
         }
-        if (k > 0) {
-            isPoured = true;
-            return isPoured;
-        }else {
-            isPoured = false;
-            return isPoured;
-        }
+
+        return isPoured;
     }
 
     public void swap(int bottleNumber) {
@@ -256,25 +307,62 @@ public class WaterSortGame {
 
     public void replaceColor(String firstColor, String secondColor) {
         int k = 0, sw = 0;
-//        for (int i = 0; i < 3; i++) { // 3 -> color.length
-//            if (firstColor == color[i]) {
-//                sw = 1;
-//                k = i;
-//            }
-//        }
-//        color[k] = secondColor;
-        for (int i = 0; i < countBottle; i++) {
-            Stack stackReplace = clinkedList.last.getNextStack();
-            Node temp = stackReplace.top;
-            while (temp != null) {
-                if (temp.getColor().equals(firstColor)) {
-                    temp.setColor(secondColor);
-                }
-                temp = temp.next();
+        for (int i = 0; i < 3; i++) { // 3 -> color.length
+            System.out.println(color[i]);
+            if (firstColor.equals(color[i])) {
+                System.out.println("kh");
+                sw = 1;
+                k = i;
             }
-            stackReplace = stackReplace.getNextStack();
         }
-    } // کار داره هنوز
+        color[k] = secondColor;
+        if (sw == 1) {
+            System.out.println("kh");
+            Stack stackReplace = clinkedList.last;
+            for (int i = 0; i < countBottle; i++) {
+                Node temp = stackReplace.top;
+                while (temp != null) {
+                    if (temp.getColor().equals(firstColor)) {
+                        temp.setColor(secondColor);
+                    }
+                    temp = temp.next();
+                }
+                stackReplace = stackReplace.getNextStack();
+            }
+        }
+    }
+
+    public boolean sameColor(Stack stackSame) {
+        Node temp = stackSame.top;
+        int k = 1;
+
+            while (temp != null) {
+                temp = temp.next();
+                k++;
+                //1-2-3-4
+            }
+
+        if (k == maxBottleSize) {
+            return true;
+        }
+        else return false;
+    }
+
+    public boolean hasWon() {
+        int k = 0;//تعداد بطری هایی که کامل شده اند
+        Stack temp = clinkedList.last;
+        while (temp.getNextStack() != clinkedList.last) {
+            if (sameColor(temp) == true) {
+                k++;
+            }
+            temp = temp.getNextStack();
+        }
+        if (k == countBottle - 1) {
+            System.out.println("you are winner");
+            return true;
+        }
+        else return false;
+    }
 
     public void addEmptyBottle() {
         if (addEmpty == false) {
